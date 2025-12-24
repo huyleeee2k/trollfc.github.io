@@ -49,11 +49,19 @@ document.getElementById("passwordInput").addEventListener("keydown", e => {
   if (e.key === "Enter") checkPassword();
 });
 
-/* Toggle hiện / ẩn mật khẩu */
-document.getElementById("togglePassword").addEventListener("click", () => {
+// Toggle hiện / ẩn mật khẩu
+document.getElementById("togglePassword").addEventListener("click", function () {
   const input = document.getElementById("passwordInput");
-  input.type = input.type === "password" ? "text" : "password";
+
+  if (input.type === "password") {
+    input.type = "text";
+    this.textContent = "🙈";
+  } else {
+    input.type = "password";
+    this.textContent = "👁️";
+  }
 });
+
 
 /* Click nền để đóng */
 window.addEventListener("click", e => {
