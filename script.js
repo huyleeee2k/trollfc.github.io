@@ -16,7 +16,7 @@ function openPopup(event) {
   errorText.textContent = "";
 
   input.type = "password";
-  toggleBtn.textContent = "👁️";
+  toggleBtn.textContent = "🙉";
 
   input.focus();
 }
@@ -74,7 +74,7 @@ document.getElementById("togglePassword").addEventListener("click", function () 
   const isHidden = input.type === "password"; // trạng thái TRƯỚC khi đổi
 
   input.type = isHidden ? "text" : "password";
-  this.textContent = isHidden ? "🙈" : "👁️";
+  this.textContent = isHidden ? "🙈" : "🙉";
 });
 
 
