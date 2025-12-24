@@ -1,24 +1,10 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TrollFC | GitHub Pages</title>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-
 <body>
   <div class="card">
     <h1>Xin chào, tôi là Huy đến từ <span>TrollFC</span></h1>
 
     <div class="buttons">
-      <a class="btn primary" href="#">
-        Vào trong
-      </a>
-      <a class="btn secondary" onclick="openPopup()">
-        Điền form
-      </a>
+      <a class="btn primary" href="#">Vào trong</a>
+      <a class="btn secondary" onclick="openPopup()">Điền form</a>
     </div>
 
     <footer>
@@ -26,25 +12,24 @@
     </footer>
   </div>
 
-  <script src="script.js"></script>
   <div id="popup" class="popup">
-  <div class="popup-box">
-    <h3>🔐 Nhập mật khẩu</h3>
+    <div class="popup-box">
+      <h3>🔐 Nhập mật khẩu</h3>
 
-    <input
-      type="password"
-      id="passwordInput"
-      placeholder="Mật khẩu..."
-    />
+      <input
+        type="password"
+        id="passwordInput"
+        placeholder="Mật khẩu..."
+      />
 
-    <p id="errorText"></p>
+      <p id="errorText"></p>
 
-    <div class="popup-buttons">
-      <button onclick="checkPassword()">Xác nhận</button>
-      <button class="cancel" onclick="closePopup()">Huỷ</button>
+      <div class="popup-buttons">
+        <button onclick="checkPassword()">Xác nhận</button>
+        <button class="cancel" onclick="closePopup()">Huỷ</button>
+      </div>
     </div>
   </div>
-</div>
 
+  <script src="script.js"></script>
 </body>
-</html>
