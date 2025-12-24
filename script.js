@@ -3,16 +3,24 @@ const PASSWORD_HASH =
 
 const TARGET_URL = "https://forms.gle/cgaTb9iYfeBZNUB3A";
 
-function openPopup() {
+function openPopup(event) {
+  if (event) event.stopPropagation();
+
   const popup = document.getElementById("popup");
   const input = document.getElementById("passwordInput");
   const errorText = document.getElementById("errorText");
+  const toggleBtn = document.getElementById("togglePassword");
 
   popup.style.display = "flex";
   input.value = "";
   errorText.textContent = "";
+
+  input.type = "password";
+  toggleBtn.textContent = "👁️";
+
   input.focus();
 }
+
 
 function closePopup() {
   document.getElementById("popup").style.display = "none";
@@ -27,9 +35,10 @@ async function sha256(text) {
     .join("");
 }
 
+let errorTimer = null;
+
 async function checkPassword() {
   const inputEl = document.getElementById("passwordInput");
-  const popupBox = document.querySelector(".popup-box");
   const errorText = document.getElementById("errorText");
 
   const inputHash = await sha256(inputEl.value.trim());
@@ -39,22 +48,40 @@ async function checkPassword() {
     closePopup();
   } else {
     errorText.textContent = "❌ Mật khẩu không đúng";
-    popupBox.classList.add("shake");
-    setTimeout(() => popupBox.classList.remove("shake"), 350);
+    errorText.style.opacity = "1";
+
+    if (errorTimer) clearTimeout(errorTimer);
+
+    errorTimer = setTimeout(() => {
+      errorText.style.opacity = "0";
+      errorText.textContent = "";
+    }, 2000);
   }
 }
 
+
 document.getElementById("passwordInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") checkPassword();
+  if (e.key === "Enter") {
+    e.preventDefault(); // 🔒 chặn reload
+    checkPassword();
+  }
 });
 
 document.getElementById("togglePassword").addEventListener("click", function () {
   const input = document.getElementById("passwordInput");
-  input.type = input.type === "password" ? "text" : "password";
-  this.textContent = input.type === "password" ? "👁️" : "🙈";
+
+  const isHidden = input.type === "password"; // trạng thái TRƯỚC khi đổi
+
+  input.type = isHidden ? "text" : "password";
+  this.textContent = isHidden ? "🙈" : "👁️";
 });
+
 
 window.addEventListener("click", e => {
   const popup = document.getElementById("popup");
   if (e.target === popup) closePopup();
+});
+
+document.querySelector(".popup-box").addEventListener("click", e => {
+  e.stopPropagation();
 });
