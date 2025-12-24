@@ -16,7 +16,7 @@
       <a class="btn primary" href="#">
         Vào trong
       </a>
-      <a class="btn secondary" href="https://forms.gle/cgaTb9iYfeBZNUB3A" target="_blank">
+      <a class="btn secondary" onclick="openPopup()">
         Điền form
       </a>
     </div>
@@ -27,5 +27,24 @@
   </div>
 
   <script src="script.js"></script>
+  <div id="popup" class="popup">
+  <div class="popup-box">
+    <h3>🔐 Nhập mật khẩu</h3>
+
+    <input
+      type="password"
+      id="passwordInput"
+      placeholder="Mật khẩu..."
+    />
+
+    <p id="errorText"></p>
+
+    <div class="popup-buttons">
+      <button onclick="checkPassword()">Xác nhận</button>
+      <button class="cancel" onclick="closePopup()">Huỷ</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
