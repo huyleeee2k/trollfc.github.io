@@ -21,16 +21,22 @@
     </footer>
   </div>
 
-  <!-- POPUP PHẢI Ở ĐÂY -->
+  <!-- POPUP -->
   <div id="popup" class="popup">
     <div class="popup-box">
       <h3>🔐 Nhập mật khẩu</h3>
 
-      <input
-        type="password"
-        id="passwordInput"
-        placeholder="Mật khẩu..."
-      />
+      <!-- INPUT + TOGGLE -->
+      <div class="password-wrapper">
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="Mật khẩu..."
+        />
+        <button id="togglePassword" type="button" title="Hiện / Ẩn mật khẩu">
+          👁️
+        </button>
+      </div>
 
       <p id="errorText"></p>
 
@@ -41,7 +47,6 @@
     </div>
   </div>
 
-  <!-- SCRIPT LUÔN Ở CUỐI -->
   <script src="script.js"></script>
 </body>
 </html>
