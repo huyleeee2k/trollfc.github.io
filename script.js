@@ -44,7 +44,8 @@ async function checkPassword() {
   const inputHash = await sha256(inputEl.value.trim());
 
   if (inputHash === PASSWORD_HASH) {
-    window.open(TARGET_URL, "_blank");
+    //window.open(TARGET_URL, "_blank");
+    window.location.href = TARGET_URL;
     closePopup();
   } else {
     errorText.textContent = "❌ Mật khẩu không đúng";
