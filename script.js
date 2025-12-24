@@ -1,4 +1,4 @@
-const PASSWORD_HASH = "8d969eef6ecad3c29a3a629280e686cf";
+const PASSWORD_HASH = "8d969eef6ecad3c29a3a629280e686cff8fab2e7f3a6f3f6c5f2b7c7c2f1b3c1";
 const TARGET_URL = "https://forms.gle/cgaTb9iYfeBZNUB3A";
 
 function openPopup() {
