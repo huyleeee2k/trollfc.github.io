@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TrollFC | Home</title>
+
+  <!-- FIX ICON -->
+  <link rel="icon" href="/assets/img/football.png?v=2">
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <h1>📊 Google Sheets Tool</h1>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT -->
+    <section class="panel left">
+      <h2>Nhập Google Sheets</h2>
+
+      <input
+        id="sheetInput"
+        type="url"
+        placeholder="https://docs.google.com/spreadsheets/..."
+      />
+
+      <div class="buttons">
+        <button id="btnLoad" class="primary">📥 Nhập dữ liệu</button>
+        <button id="btnReset" class="danger">🗑 Reset dữ liệu</button>
+        <button class="secondary" disabled>🔀 Sắp xếp dữ liệu</button>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="panel right">
+      <h2>Dữ liệu hiển thị</h2>
+
+      <div id="preview" class="preview empty">
+        <p>
+          Chưa có dữ liệu<br>
+          Hãy nhập link Google Sheets và bấm “Nhập dữ liệu”
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- JS -->
+  <script src="home.js"></script>
+</body>
+</html>

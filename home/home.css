@@ -1,0 +1,186 @@
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --panel: #111;
+  --text: #c9d1d9;
+  --accent: #58a6ff;
+  --border: #30363d;
+}
+
+/* ================= RESET ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #0d1117, #010409);
+  color: var(--text);
+  overflow: hidden; /* 🔒 chặn scroll toàn trang */
+}
+
+/* ================= TOP BAR ================= */
+.topbar {
+  height: 64px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: #0f0f0f;
+}
+
+.topbar h1 {
+  font-size: 20px;
+  color: white;
+}
+
+/* ================= LAYOUT ================= */
+.layout {
+  height: calc(100vh - 64px); /* 🔒 khóa chiều cao */
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* ================= PANEL ================= */
+.panel {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+}
+
+.panel h2 {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #eee;
+}
+
+/* ================= LEFT PANEL ================= */
+.panel.left input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #1c1c1c;
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.panel.left input::placeholder {
+  color: #666;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+button {
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: .9;
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: #ffffff;
+  color: #000;
+}
+
+.danger {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.secondary {
+  background: #2a2a2a;
+  color: #aaa;
+}
+
+/* ================= RIGHT PANEL ================= */
+.panel.right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* 🔒 chặn vỡ */
+}
+
+/* ================= PREVIEW ================= */
+.preview {
+  flex: 1;
+  min-height: 0;        /* 🔑 CHÌA KHÓA */
+  overflow: auto;       /* scroll bên trong */
+  padding: 10px;
+}
+
+.preview.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview.empty p {
+  color: #777;
+  text-align: center;
+  line-height: 1.8;
+  font-size: 15px;
+  max-width: 320px;
+}
+
+/* ================= TABLE ================= */
+.data-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td {
+  max-width: 160px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-table th {
+  background: #111;
+  color: var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.data-table tr:hover td {
+  background: rgba(255,255,255,0.04);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
