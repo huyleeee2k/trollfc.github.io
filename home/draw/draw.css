@@ -1,0 +1,128 @@
+:root {
+  --bg: #0d1117;
+  --panel: #111;
+  --text: #c9d1d9;
+  --accent: #58a6ff;
+  --border: #30363d;
+}
+
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0d1117, #010409);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* ===== TITLE ===== */
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* ===== PANEL ===== */
+.panel {
+  max-width: 900px;
+  margin: 0 auto 32px;
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+
+.panel h2 {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+/* ===== SPIN BOX ===== */
+.spin-box {
+  background: #0b0b0b;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+/* ===== CONTROLS ===== */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.controls select {
+  min-width: 140px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #020617;
+  color: #fff;
+}
+
+.controls button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== SPIN AREA ===== */
+.spin-area {
+  display: flex;
+  justify-content: center;
+}
+
+#slot {
+  min-width: 240px;
+  padding: 18px 32px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  background: #020617;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--accent);
+}
+
+/* ===== TABLE ===== */
+.data-table {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid var(--border);
+  padding: 10px;
+  text-align: center;
+}
+
+.data-table th {
+  background: #020617;
+  color: var(--accent);
+}
+
+.data-table td:nth-child(2) {
+  text-align: left;
+  font-weight: 600;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

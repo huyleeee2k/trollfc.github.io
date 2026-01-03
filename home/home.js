@@ -7,6 +7,7 @@ const btnLoad = document.getElementById("btnLoad");
 const btnReset = document.getElementById("btnReset");
 const btnLoadExist = document.getElementById("btnLoadExist");
 const btnSort = document.getElementById("btnSort");
+const btnDraw = document.getElementById("btnDraw");
 
 /* ==========================
    GLOBAL CACHE
@@ -171,6 +172,12 @@ function sortByAverage() {
     ? "🔽 Điểm trung bình giảm dần"
     : "🔼 Điểm trung bình tăng dần";
 
+  // ✅ LƯU DANH SÁCH ĐÃ SẮP XẾP
+  localStorage.setItem(
+    "personList",
+    JSON.stringify(gDataRows)
+  );
+
   renderTable(gDataRows);
 }
 
@@ -187,6 +194,18 @@ function resetData() {
     </p>
   `;
 }
+
+btnDraw.addEventListener("click", () => {
+  const list = JSON.parse(localStorage.getItem("personList"));
+
+  if (!list || !list.length) {
+    alert("⚠️ Chưa có danh sách đã sắp xếp");
+    return;
+  }
+
+  window.location.href = "/home/draw/index.html";
+});
+
 
 /* ==========================
    EVENTS
