@@ -79,59 +79,86 @@ function renderGroup(g) {
 }
 
 /* ==========================
-   GIFT LOGIC
+   GIFT LOGIC (FLIP CARD)
 ========================== */
-btnSpin.onclick = () => {
-  const g = +groupSelect.value;
-  const pool = spinPool[g];
+let opened = false;
 
+function createGifts(g) {
   giftGrid.innerHTML = "";
   slot.textContent = "🎁 Chọn một hộp";
+  opened = false;
 
-  if (pool.length === 0) {
+  const pool = spinPool[g];
+  if (!pool || pool.length === 0) {
     slot.textContent = "❌ Hết người";
-    return;
-  }
-
-  if (pool.length === 1) {
-    slot.textContent = `🏆 ${pool[0].label}`;
-    pool.splice(0, 1);
-    renderGroup(g);
     return;
   }
 
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
-  shuffled.forEach((p, index) => {
-    const box = document.createElement("div");
-    box.className = "gift";
-    box.textContent = "🎁";
+  shuffled.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "gift-card";
 
-    box.onclick = () => {
-      if (box.classList.contains("opened")) return;
+    card.innerHTML = `
+      <div class="gift-inner">
+        <div class="gift-face gift-front">🎁</div>
+        <div class="gift-face gift-back">${p.label}</div>
+      </div>
+    `;
 
-      box.classList.add("opened");
-      box.textContent = p.label;
+    card.onclick = () => {
+      if (opened) return;
+      opened = true;
+
+      card.classList.add("open");
       slot.textContent = `🎉 Trúng: ${p.label}`;
 
       // remove khỏi pool
-      const realIndex = pool.findIndex(x => x.label === p.label);
-      pool.splice(realIndex, 1);
+      const idx = pool.findIndex(x => x.label === p.label);
+      if (idx !== -1) pool.splice(idx, 1);
 
-      // disable các hộp khác
-      [...giftGrid.children].forEach(b => {
-        b.onclick = null;
-        if (!b.classList.contains("opened")) b.style.opacity = .4;
+      // khóa các hộp khác
+      [...giftGrid.children].forEach(c => {
+        c.onclick = null;
+        if (c !== card) c.style.opacity = 0.4;
       });
 
       renderGroup(g);
     };
 
-    giftGrid.appendChild(box);
+    giftGrid.appendChild(card);
   });
+}
+
+/* ==========================
+   BUTTON EVENTS
+========================== */
+btnSpin.onclick = () => {
+  const g = +groupSelect.value;
+  createGifts(g);
 };
+
+/* RESET GIFT ONLY */
+const btnReset = document.getElementById("btnReset");
+btnReset.onclick = () => {
+  const g = +groupSelect.value;
+  createGifts(g);
+};
+
+/* ==========================
+   GROUP CHANGE
+========================== */
+groupSelect.addEventListener("change", () => {
+  const g = +groupSelect.value;
+  resetGroup(g);
+  renderGroup(g);
+  createGifts(g);
+});
 
 /* ==========================
    INIT
 ========================== */
 renderGroup(1);
+createGifts(1);
+
