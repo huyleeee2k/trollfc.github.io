@@ -11,28 +11,36 @@
 
   <h1>🎯 Quay chọn nhóm</h1>
 
+  <!-- PANEL: DANH SÁCH ĐÃ SẮP XẾP -->
   <section class="panel">
-  <h2>📋 Danh sách đã sắp xếp</h2>
-  <div id="listPreview"></div>
-</section>
+    <h2>📋 Danh sách đã sắp xếp</h2>
+    <div id="listPreview"></div>
+  </section>
 
-  <!-- PANEL QUAY -->
+  <!-- PANEL: QUAY -->
   <section class="panel">
-    <h2>🎡 Chọn & quay nhóm</h2>
+    <h2>🎁 Chọn nhóm & mở hộp</h2>
 
     <div class="spin-box">
+
+      <!-- CONTROLS -->
       <div class="controls">
         <select id="groupSelect"></select>
-        <button id="btnSpin">🎡 Quay</button>
+        <button id="btnSpin">🎁 Tạo hộp</button>
       </div>
 
-      <div class="spin-area">
-        <div id="slot">Chưa quay</div>
+      <!-- HỘP QUÀ -->
+      <div class="gift-grid" id="giftGrid"></div>
+
+      <!-- KẾT QUẢ -->
+      <div class="spin-result" id="slot">
+        Chưa mở hộp
       </div>
+
     </div>
   </section>
 
-  <!-- BẢNG HIỂN THỊ NHÓM -->
+  <!-- PANEL: DANH SÁCH NHÓM -->
   <section class="panel">
     <h2>📋 Danh sách chia nhóm</h2>
 
@@ -50,6 +58,5 @@
 
   <script src="draw.js"></script>
 </body>
-
 
 </html>

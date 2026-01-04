@@ -3,102 +3,135 @@ const groupSelect = document.getElementById("groupSelect");
 const groupTable = document.getElementById("groupTable");
 const slot = document.getElementById("slot");
 const btnSpin = document.getElementById("btnSpin");
+const giftGrid = document.getElementById("giftGrid");
 
 const GROUP_SIZE = 4;
 
-// ==========================
-// LOAD DATA
-// ==========================
+/* ==========================
+   LOAD DATA
+========================== */
 const personList = JSON.parse(localStorage.getItem("personList"));
-
 if (!personList || !personList.length) {
   alert("⚠️ Chưa có danh sách, quay lại trang Home");
-  window.location.href = "/home/index.html";
+  location.href = "/home/index.html";
 }
 
-// ==========================
-// PREVIEW TABLE
-// ==========================
+/* ==========================
+   PREVIEW
+========================== */
 renderPreview(personList);
 
 function renderPreview(list) {
   let html = `
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>STT</th>
-          <th>Tên</th>
-          <th>Điểm TB</th>
-          <th>Nhóm</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
+  <table class="data-table">
+    <thead>
+      <tr><th>STT</th><th>Tên</th><th>Điểm TB</th><th>Nhóm</th></tr>
+    </thead><tbody>`;
   list.forEach((p, i) => {
-    const group = Math.floor(i / GROUP_SIZE) + 1;
     html += `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${p.label}</td>
-        <td>${p.avg.toFixed(2)}</td>
-        <td>Nhóm ${group}</td>
-      </tr>
-    `;
+    <tr>
+      <td>${i + 1}</td>
+      <td>${p.label}</td>
+      <td>${p.avg.toFixed(2)}</td>
+      <td>Nhóm ${Math.floor(i / GROUP_SIZE) + 1}</td>
+    </tr>`;
   });
-
-  html += `</tbody></table>`;
+  html += "</tbody></table>";
   listPreview.innerHTML = html;
 }
 
-// ==========================
-// GROUP SELECT
-// ==========================
+/* ==========================
+   GROUP
+========================== */
 const totalGroups = Math.ceil(personList.length / GROUP_SIZE);
+const spinPool = {};
 
 for (let i = 1; i <= totalGroups; i++) {
-  const opt = document.createElement("option");
-  opt.value = i;
-  opt.textContent = `Nhóm ${i}`;
-  groupSelect.appendChild(opt);
+  groupSelect.innerHTML += `<option value="${i}">Nhóm ${i}</option>`;
+  resetGroup(i);
+}
+
+function resetGroup(g) {
+  spinPool[g] = personList.slice((g - 1) * GROUP_SIZE, g * GROUP_SIZE);
 }
 
 groupSelect.addEventListener("change", () => {
-  renderGroup(+groupSelect.value);
-  slot.textContent = "Chưa quay";
+  const g = +groupSelect.value;
+  resetGroup(g);
+  renderGroup(g);
+  giftGrid.innerHTML = "";
+  slot.textContent = "Chưa mở hộp";
 });
 
-// ==========================
-// GROUP TABLE
-// ==========================
-function renderGroup(groupNumber) {
+/* ==========================
+   GROUP TABLE
+========================== */
+function renderGroup(g) {
   groupTable.innerHTML = "";
-
-  const start = (groupNumber - 1) * GROUP_SIZE;
-  const groupList = personList.slice(start, start + GROUP_SIZE);
-
-  groupList.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>Nhóm ${groupNumber}</td>
-      <td>${p.label}</td>
-      <td>${p.avg.toFixed(2)}</td>
-    `;
-    groupTable.appendChild(tr);
+  spinPool[g].forEach(p => {
+    groupTable.innerHTML += `
+      <tr>
+        <td>Nhóm ${g}</td>
+        <td>${p.label}</td>
+        <td>${p.avg.toFixed(2)}</td>
+      </tr>`;
   });
 }
 
-// default
+/* ==========================
+   GIFT LOGIC
+========================== */
+btnSpin.onclick = () => {
+  const g = +groupSelect.value;
+  const pool = spinPool[g];
+
+  giftGrid.innerHTML = "";
+  slot.textContent = "🎁 Chọn một hộp";
+
+  if (pool.length === 0) {
+    slot.textContent = "❌ Hết người";
+    return;
+  }
+
+  if (pool.length === 1) {
+    slot.textContent = `🏆 ${pool[0].label}`;
+    pool.splice(0, 1);
+    renderGroup(g);
+    return;
+  }
+
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach((p, index) => {
+    const box = document.createElement("div");
+    box.className = "gift";
+    box.textContent = "🎁";
+
+    box.onclick = () => {
+      if (box.classList.contains("opened")) return;
+
+      box.classList.add("opened");
+      box.textContent = p.label;
+      slot.textContent = `🎉 Trúng: ${p.label}`;
+
+      // remove khỏi pool
+      const realIndex = pool.findIndex(x => x.label === p.label);
+      pool.splice(realIndex, 1);
+
+      // disable các hộp khác
+      [...giftGrid.children].forEach(b => {
+        b.onclick = null;
+        if (!b.classList.contains("opened")) b.style.opacity = .4;
+      });
+
+      renderGroup(g);
+    };
+
+    giftGrid.appendChild(box);
+  });
+};
+
+/* ==========================
+   INIT
+========================== */
 renderGroup(1);
-
-// ==========================
-// SIMPLE SPIN
-// ==========================
-btnSpin.addEventListener("click", () => {
-  const groupNumber = +groupSelect.value;
-  const start = (groupNumber - 1) * GROUP_SIZE;
-  const groupList = personList.slice(start, start + GROUP_SIZE);
-
-  const winner = groupList[Math.floor(Math.random() * groupList.length)];
-  slot.textContent = `🎉 ${winner.label}`;
-});

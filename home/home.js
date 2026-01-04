@@ -203,7 +203,7 @@ btnDraw.addEventListener("click", () => {
     return;
   }
 
-  window.location.href = "/home/draw/index.html";
+  window.location.href = "/home/draw/";
 });
 
 
