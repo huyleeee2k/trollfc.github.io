@@ -28,6 +28,13 @@
         <select id="groupSelect"></select>
         <button id="btnSpin">🎁 Mở quà</button>
         <button id="btnReset" style="background:#ef4444;color:#fff">🔄 Reset</button>
+        <button id="btnReload" style="background:#facc15;color:#000">🔁 Reset từ đầu</button>
+        <div id="reserveBox" style="display:none">
+        <input id="reserveInput" placeholder="Nhập tên dự bị, cách nhau dấu ," />
+        <button id="btnReserve">➕ Thêm dự bị</button>
+        
+      </div>
+
       </div>
 
       <!-- HỘP QUÀ -->
@@ -57,6 +64,10 @@
       <tbody id="groupTable"></tbody>
     </table>
   </section>
+
+  <canvas id="confetti"></canvas>
+
+  <div id="toast" class="toast">✔ Thêm danh sách dự bị thành công</div>
 
   <script src="draw.js"></script>
 </body>
