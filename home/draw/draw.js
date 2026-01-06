@@ -35,7 +35,7 @@ function showToast(msg) {
 const personList = JSON.parse(localStorage.getItem("personList"));
 if (!personList || !personList.length) {
   alert("⚠️ Chưa có danh sách");
-  location.href = "/home/index.html";
+  location.href = "/home";
 }
 
 /* ==========================
@@ -85,35 +85,58 @@ for (let i = 1; i <= totalGroups; i++) {
 groupSelect.innerHTML += `<option value="reserve">🔁 Nhóm dự bị</option>`;
 
 /* ==========================
-   GROUP TABLE
+   GROUP TABLE (có nút xóa)
 ========================== */
 function renderCurrentGroup() {
   const value = groupSelect.value;
   groupTable.innerHTML = "";
 
+  const renderRow = (groupLabel, name, avg, onDelete) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${groupLabel}</td>
+      <td>${name}</td>
+      <td>${avg ?? "-"}</td>
+      <td>
+        <button class="btn-delete" title="Xóa">−</button>
+      </td>
+    `;
+    tr.querySelector(".btn-delete").onclick = onDelete;
+    groupTable.appendChild(tr);
+  };
+
+
   if (value === "reserve") {
-    reserveList.forEach(p => {
-      groupTable.innerHTML += `
-        <tr>
-          <td>Dự bị</td>
-          <td>${p.label}</td>
-          <td>-</td>
-        </tr>
-      `;
+    reserveList.forEach((p, i) => {
+      renderRow(
+        "Dự bị",
+        p.label,
+        "-",
+        () => {
+          reserveList.splice(i, 1);
+          renderCurrentGroup();
+          createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
+        }
+      );
     });
+
     return;
   }
 
   const g = +value;
-  spinPool[g].forEach(p => {
-    groupTable.innerHTML += `
-      <tr>
-        <td>Nhóm ${g}</td>
-        <td>${p.label}</td>
-        <td>${p.avg.toFixed(2)}</td>
-      </tr>
-    `;
+  spinPool[g].forEach((p, i) => {
+    renderRow(
+      `Nhóm ${g}`,
+      p.label,
+      p.avg.toFixed(2),
+      () => {
+        spinPool[g].splice(i, 1);
+        renderCurrentGroup();
+        createGiftsFromPool(spinPool[g]);
+      }
+    );
   });
+
 }
 
 /* ==========================
@@ -130,11 +153,11 @@ let confettiRunning = false;
 let confettiFrameId = null;
 
 function launchConfetti() {
-  if (confettiRunning) return; // ❌ không cho chạy chồng
+  if (confettiRunning) return;
   confettiRunning = true;
 
   const pieces = [];
-  const duration = 120; // số frame (~2s)
+  const duration = 120;
   let frame = 0;
 
   for (let i = 0; i < 90; i++) {
@@ -166,12 +189,7 @@ function launchConfetti() {
     });
 
     frame++;
-
-    if (frame < duration) {
-      confettiFrameId = requestAnimationFrame(animate);
-    } else {
-      stopConfetti();
-    }
+    frame < duration ? requestAnimationFrame(animate) : stopConfetti();
   }
 
   animate();
@@ -214,28 +232,23 @@ function createGiftsFromPool(pool, label = "🎁 Chọn một hộp") {
       if (opened) return;
       opened = true;
 
-      // 👉 LẬT HỘP TRƯỚC
       card.classList.add("open");
 
-      // ⏱ ĐỢI animation lật (~800ms)
       setTimeout(() => {
         launchConfetti();
-
         slot.textContent = `🎉 Trúng: ${p.label}`;
 
         const idx = pool.indexOf(p);
         if (idx !== -1) pool.splice(idx, 1);
 
-        // khóa các hộp khác SAU animation
         [...giftGrid.children].forEach(c => {
           c.onclick = null;
           if (c !== card) c.style.opacity = 0.4;
         });
 
         renderCurrentGroup();
-      }, 800); // 👈 BẰNG THỜI GIAN flip CSS
+      }, 800);
     };
-
 
     giftGrid.appendChild(card);
   });
@@ -263,48 +276,28 @@ groupSelect.addEventListener("change", () => {
 
 btnSpin.onclick = () => {
   const value = groupSelect.value;
-  if (value === "reserve") {
-    createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
-  } else {
-    createGiftsFromPool(spinPool[+value]);
-  }
+  value === "reserve"
+    ? createGiftsFromPool(reserveList, "🎁 Mở quà dự bị")
+    : createGiftsFromPool(spinPool[+value]);
 };
 
 btnReset.onclick = btnSpin.onclick;
 
-/* ==========================
-   ADD RESERVE
-========================== */
 btnReserve.onclick = () => {
   const raw = reserveInput.value.trim();
-  if (!raw) {
-    showToast("⚠️ Vui lòng nhập tên dự bị");
-    return;
-  }
+  if (!raw) return showToast("⚠️ Vui lòng nhập tên");
 
-  const names = raw
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean)
-    .slice(0, 4);
+  raw.split(",").map(s => s.trim()).filter(Boolean).forEach(name => {
+    reserveList.push({ label: name });
+  });
 
-  if (!names.length) {
-    showToast("⚠️ Danh sách không hợp lệ");
-    return;
-  }
-
-  names.forEach(name => reserveList.push({ label: name }));
   reserveInput.value = "";
-
   renderCurrentGroup();
   createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
-  showToast("✔ Thêm danh sách dự bị thành công");
+  showToast("✔ Thêm dự bị thành công");
 };
 
-btnReload.onclick = () => {
-  location.reload(); // load lại page từ đầu
-};
-
+btnReload.onclick = () => location.reload();
 
 /* ==========================
    INIT

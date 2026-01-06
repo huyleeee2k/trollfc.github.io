@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
   <meta charset="UTF-8" />
   <title>Quay nhóm</title>
@@ -26,15 +25,23 @@
       <!-- CONTROLS -->
       <div class="controls">
         <select id="groupSelect"></select>
-        <button id="btnSpin">🎁 Mở quà</button>
-        <button id="btnReset" style="background:#ef4444;color:#fff">🔄 Reset</button>
-        <button id="btnReload" style="background:#facc15;color:#000">🔁 Reset từ đầu</button>
-        <div id="reserveBox" style="display:none">
-        <input id="reserveInput" placeholder="Nhập tên dự bị, cách nhau dấu ," />
-        <button id="btnReserve">➕ Thêm dự bị</button>
-        
-      </div>
 
+        <button id="btnSpin">🎁 Mở quà</button>
+        <button id="btnReset" style="background:#ef4444;color:#fff">
+          🔄 Reset
+        </button>
+        <button id="btnReload" style="background:#facc15;color:#000">
+          🔁 Reset từ đầu
+        </button>
+
+        <!-- RESERVE -->
+        <div id="reserveBox" style="display:none">
+          <input
+            id="reserveInput"
+            placeholder="Nhập tên dự bị, cách nhau dấu ,"
+          />
+          <button id="btnReserve">➕ Thêm dự bị</button>
+        </div>
       </div>
 
       <!-- HỘP QUÀ -->
@@ -46,7 +53,6 @@
       </div>
 
     </div>
-
   </section>
 
   <!-- PANEL: DANH SÁCH NHÓM -->
@@ -59,6 +65,7 @@
           <th>Nhóm</th>
           <th>Tên</th>
           <th>Điểm TB</th>
+          <th>Xóa</th>
         </tr>
       </thead>
       <tbody id="groupTable"></tbody>
@@ -67,9 +74,10 @@
 
   <canvas id="confetti"></canvas>
 
-  <div id="toast" class="toast">✔ Thêm danh sách dự bị thành công</div>
+  <div id="toast" class="toast">
+    ✔ Thêm danh sách dự bị thành công
+  </div>
 
   <script src="draw.js"></script>
 </body>
-
 </html>

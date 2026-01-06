@@ -65,7 +65,7 @@ h1 {
 }
 
 .controls select,
-.reserve-box input {
+#reserveBox input {
   min-width: 160px;
   padding: 10px 14px;
   border-radius: 8px;
@@ -75,7 +75,7 @@ h1 {
 }
 
 .controls button,
-.reserve-box button {
+#reserveBox button {
   padding: 10px 18px;
   border-radius: 8px;
   border: none;
@@ -85,18 +85,25 @@ h1 {
 }
 
 .controls button:hover,
-.reserve-box button:hover {
+#reserveBox button:hover {
   transform: translateY(-1px);
   filter: brightness(1.1);
 }
 
+/* Buttons */
 #btnSpin {
   background: var(--success);
+  color: #fff;
 }
 
 #btnReset {
   background: var(--danger);
   color: #fff;
+}
+
+#btnReload {
+  background: #facc15;
+  color: #000;
 }
 
 /* ================= SLOT ================= */
@@ -117,10 +124,8 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, 140px);
   gap: 20px;
-
   justify-content: center;
   align-content: center;
-
   min-height: 320px;
   margin: 12px auto 0;
 }
@@ -150,12 +155,10 @@ h1 {
   position: absolute;
   inset: 0;
   border-radius: 16px;
-
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-
   backface-visibility: hidden;
   font-weight: 800;
   font-size: 18px;
@@ -216,9 +219,26 @@ h1 {
   font-weight: 600;
 }
 
+/* ================= DELETE BUTTON ================= */
+.btn-delete {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform .15s ease, filter .2s;
+}
+
+.btn-delete:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
 /* ================= RESERVE BOX ================= */
-#reserveBox,
-.reserve-box {
+#reserveBox {
   display: flex;
   gap: 10px;
   justify-content: center;
@@ -267,9 +287,8 @@ h1 {
     width: 120px;
     height: 120px;
   }
-}
 
-#btnReload {
-  background: #facc15;
-  color: #000;
+  .controls {
+    flex-direction: column;
+  }
 }
