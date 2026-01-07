@@ -7,27 +7,16 @@ const groupTable = document.getElementById("groupTable");
 const slot = document.getElementById("slot");
 const btnSpin = document.getElementById("btnSpin");
 const btnReset = document.getElementById("btnReset");
-const giftGrid = document.getElementById("giftGrid");
+const btnReload = document.getElementById("btnReload");
 
 const reserveBox = document.getElementById("reserveBox");
 const reserveInput = document.getElementById("reserveInput");
 const btnReserve = document.getElementById("btnReserve");
-const btnReload = document.getElementById("btnReload");
 
-const toast = document.getElementById("toast");
-const confettiCanvas = document.getElementById("confetti");
-const confettiCtx = confettiCanvas.getContext("2d");
+const wheel = document.getElementById("wheel");
+const ctx = wheel.getContext("2d");
 
 const GROUP_SIZE = 4;
-
-/* ==========================
-   TOAST
-========================== */
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
-}
 
 /* ==========================
    LOAD DATA
@@ -78,223 +67,207 @@ const spinPool = {};
 const reserveList = [];
 
 for (let i = 1; i <= totalGroups; i++) {
-  groupSelect.innerHTML += `<option value="${i}">Nhóm ${i}</option>`;
   spinPool[i] = personList.slice((i - 1) * GROUP_SIZE, i * GROUP_SIZE);
+  groupSelect.innerHTML += `<option value="${i}">Nhóm ${i}</option>`;
 }
-
 groupSelect.innerHTML += `<option value="reserve">🔁 Nhóm dự bị</option>`;
 
 /* ==========================
-   GROUP TABLE (có nút xóa)
+   TABLE
 ========================== */
 function renderCurrentGroup() {
   const value = groupSelect.value;
   groupTable.innerHTML = "";
 
-  const renderRow = (groupLabel, name, avg, onDelete) => {
+  const renderRow = (group, name, avg, onDelete) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${groupLabel}</td>
+      <td>${group}</td>
       <td>${name}</td>
       <td>${avg ?? "-"}</td>
-      <td>
-        <button class="btn-delete" title="Xóa">−</button>
-      </td>
+      <td><button class="btn-delete">−</button></td>
     `;
-    tr.querySelector(".btn-delete").onclick = onDelete;
+    tr.querySelector("button").onclick = onDelete;
     groupTable.appendChild(tr);
   };
 
-
   if (value === "reserve") {
     reserveList.forEach((p, i) => {
-      renderRow(
-        "Dự bị",
-        p.label,
-        "-",
-        () => {
-          reserveList.splice(i, 1);
-          renderCurrentGroup();
-          createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
-        }
-      );
+      renderRow("Dự bị", p.label, "-", () => {
+        reserveList.splice(i, 1);
+        renderCurrentGroup();
+        drawWheel(reserveList);
+      });
     });
-
     return;
   }
 
   const g = +value;
   spinPool[g].forEach((p, i) => {
-    renderRow(
-      `Nhóm ${g}`,
-      p.label,
-      p.avg.toFixed(2),
-      () => {
-        spinPool[g].splice(i, 1);
-        renderCurrentGroup();
-        createGiftsFromPool(spinPool[g]);
-      }
-    );
+    renderRow(`Nhóm ${g}`, p.label, p.avg.toFixed(2), () => {
+      spinPool[g].splice(i, 1);
+      renderCurrentGroup();
+      drawWheel(spinPool[g]);
+    });
   });
-
 }
 
 /* ==========================
-   CONFETTI
+   WHEEL DRAW
 ========================== */
-function resizeConfetti() {
-  confettiCanvas.width = window.innerWidth;
-  confettiCanvas.height = window.innerHeight;
-}
-resizeConfetti();
-window.addEventListener("resize", resizeConfetti);
+const SIZE = wheel.width;
+const R = SIZE / 2;
+let currentRotation = 0;
+let spinning = false;
 
-let confettiRunning = false;
-let confettiFrameId = null;
+/* ✅ NEW: pending winner */
+let pendingIndex = null;
+let pendingPool = null;
 
-function launchConfetti() {
-  if (confettiRunning) return;
-  confettiRunning = true;
+function drawWheel(pool) {
+  ctx.clearRect(0, 0, SIZE, SIZE);
+  if (!pool.length) return;
 
-  const pieces = [];
-  const duration = 120;
-  let frame = 0;
+  const slice = (Math.PI * 2) / pool.length;
 
-  for (let i = 0; i < 90; i++) {
-    pieces.push({
-      x: Math.random() * confettiCanvas.width,
-      y: -20,
-      r: Math.random() * 5 + 4,
-      c: `hsl(${Math.random() * 360},80%,60%)`,
-      vx: Math.random() * 2 - 1,
-      vy: Math.random() * 3 + 2,
-      rot: Math.random() * Math.PI,
-    });
-  }
+  ctx.save();
+  ctx.translate(R, R);
+  ctx.rotate(currentRotation);
+  ctx.translate(-R, -R);
 
-  function animate() {
-    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  pool.forEach((p, i) => {
+    const start = -Math.PI / 2 + i * slice;
+    const end = start + slice;
 
-    pieces.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += 0.1;
+    ctx.beginPath();
+    ctx.moveTo(R, R);
+    ctx.arc(R, R, R - 8, start, end);
+    ctx.fillStyle = `hsl(${i * 360 / pool.length},75%,55%)`;
+    ctx.fill();
 
-      confettiCtx.save();
-      confettiCtx.translate(p.x, p.y);
-      confettiCtx.rotate(p.rot);
-      confettiCtx.fillStyle = p.c;
-      confettiCtx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r);
-      confettiCtx.restore();
-    });
+    ctx.save();
+    ctx.translate(R, R);
+    ctx.rotate(start + slice / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#000";
+    ctx.font = "bold 14px system-ui";
+    ctx.fillText(p.label, R - 20, 6);
+    ctx.restore();
+  });
 
-    frame++;
-    frame < duration ? requestAnimationFrame(animate) : stopConfetti();
-  }
-
-  animate();
-}
-
-function stopConfetti() {
-  if (confettiFrameId) cancelAnimationFrame(confettiFrameId);
-  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-  confettiRunning = false;
+  ctx.restore();
 }
 
 /* ==========================
-   GIFT LOGIC
+   SPIN LOGIC
 ========================== */
-let opened = false;
+function spinWheel(pool) {
+  if (!pool.length || spinning) return;
+  spinning = true;
 
-function createGiftsFromPool(pool, label = "🎁 Chọn một hộp") {
-  giftGrid.innerHTML = "";
-  slot.textContent = label;
-  opened = false;
+  const slice = (Math.PI * 2) / pool.length;
+  const rounds = 5 + Math.random() * 5;
+  const extra = Math.random() * Math.PI * 2;
 
-  if (!pool || pool.length === 0) {
-    slot.textContent = "❌ Hết người";
-    return;
+  const targetRotation =
+    currentRotation +
+    rounds * Math.PI * 2 +
+    extra;
+
+  const duration = 5000 + Math.random() * 5000;
+  const startRotation = currentRotation;
+  const startTime = performance.now();
+
+  function animate(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+
+    currentRotation =
+      startRotation +
+      (targetRotation - startRotation) * ease;
+
+    drawWheel(pool);
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      const angle =
+        (Math.PI * 2 -
+          ((currentRotation + Math.PI / 2) % (Math.PI * 2))) %
+        (Math.PI * 2);
+
+      const index = Math.floor(angle / slice);
+      const winner = pool[index];
+
+      /* ✅ CHỈ LƯU – KHÔNG XÓA */
+      pendingIndex = index;
+      pendingPool = pool;
+
+      slot.textContent = `🎉 Trúng: ${winner.label} (nhấn SPIN để xác nhận)`;
+      slot.classList.add("win");
+
+      spinning = false;
+    }
   }
 
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-
-  shuffled.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "gift-card";
-    card.innerHTML = `
-      <div class="gift-inner">
-        <div class="gift-face gift-front">🎁</div>
-        <div class="gift-face gift-back">${p.label}</div>
-      </div>
-    `;
-
-    card.onclick = () => {
-      if (opened) return;
-      opened = true;
-
-      card.classList.add("open");
-
-      setTimeout(() => {
-        launchConfetti();
-        slot.textContent = `🎉 Trúng: ${p.label}`;
-
-        const idx = pool.indexOf(p);
-        if (idx !== -1) pool.splice(idx, 1);
-
-        [...giftGrid.children].forEach(c => {
-          c.onclick = null;
-          if (c !== card) c.style.opacity = 0.4;
-        });
-
-        renderCurrentGroup();
-      }, 800);
-    };
-
-    giftGrid.appendChild(card);
-  });
+  requestAnimationFrame(animate);
 }
 
 /* ==========================
    EVENTS
 ========================== */
-groupSelect.addEventListener("change", () => {
-  const value = groupSelect.value;
-  giftGrid.innerHTML = "";
-  slot.textContent = "Chưa mở quà";
+btnSpin.onclick = () => {
+  const pool =
+    groupSelect.value === "reserve"
+      ? reserveList
+      : spinPool[+groupSelect.value];
 
-  if (value === "reserve") {
-    reserveBox.style.display = "flex";
+  /* ✅ Nếu có pending → xóa trước */
+  if (pendingIndex !== null) {
+    pendingPool.splice(pendingIndex, 1);
+    pendingIndex = null;
+    pendingPool = null;
+
+    slot.textContent = "Chưa quay";
+    slot.classList.remove("win");
+
     renderCurrentGroup();
-    createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
+    drawWheel(pool);
     return;
   }
 
-  reserveBox.style.display = "none";
-  renderCurrentGroup();
-  createGiftsFromPool(spinPool[+value]);
-});
-
-btnSpin.onclick = () => {
-  const value = groupSelect.value;
-  value === "reserve"
-    ? createGiftsFromPool(reserveList, "🎁 Mở quà dự bị")
-    : createGiftsFromPool(spinPool[+value]);
+  spinWheel(pool);
 };
 
 btnReset.onclick = btnSpin.onclick;
 
+groupSelect.addEventListener("change", () => {
+  const pool =
+    groupSelect.value === "reserve"
+      ? reserveList
+      : spinPool[+groupSelect.value];
+
+  reserveBox.style.display =
+    groupSelect.value === "reserve" ? "flex" : "none";
+
+  pendingIndex = null;
+  slot.textContent = "Chưa quay";
+  drawWheel(pool);
+  renderCurrentGroup();
+});
+
 btnReserve.onclick = () => {
   const raw = reserveInput.value.trim();
-  if (!raw) return showToast("⚠️ Vui lòng nhập tên");
+  if (!raw) return;
 
-  raw.split(",").map(s => s.trim()).filter(Boolean).forEach(name => {
-    reserveList.push({ label: name });
-  });
+  raw.split(",")
+    .map(s => s.trim())
+    .filter(Boolean)
+    .forEach(name => reserveList.push({ label: name }));
 
   reserveInput.value = "";
   renderCurrentGroup();
-  createGiftsFromPool(reserveList, "🎁 Mở quà dự bị");
-  showToast("✔ Thêm dự bị thành công");
+  drawWheel(reserveList);
 };
 
 btnReload.onclick = () => location.reload();
@@ -303,4 +276,4 @@ btnReload.onclick = () => location.reload();
    INIT
 ========================== */
 renderCurrentGroup();
-createGiftsFromPool(spinPool[1]);
+drawWheel(spinPool[1]);
